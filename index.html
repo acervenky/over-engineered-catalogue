@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Over Engineered by Venky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amber: #f5a623;
+    --amber-dim: #c4821a;
+    --amber-glow: rgba(245,166,35,0.15);
+    --amber-glow-strong: rgba(245,166,35,0.3);
+    --green: #4ade80;
+    --green-dim: #16a34a;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --purple: #c084fc;
+    --bg: #080808;
+    --bg-card: #0e0e0e;
+    --bg-card2: #111111;
+    --border: #222222;
+    --border-amber: rgba(245,166,35,0.3);
+    --text: #d4d4d4;
+    --text-muted: #555555;
+    --text-dim: #888888;
+    --font: 'IBM Plex Mono', monospace;
+    --display: 'Bebas Neue', cursive;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── Scanline overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: overlay;
+  }
+
+  /* ── Noise texture ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    position: sticky;
+    top: 0;
+    background: rgba(8,8,8,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+  .topbar-left { display: flex; gap: 24px; align-items: center; }
+  .topbar-logo {
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .topbar-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+  }
+  .topbar-status::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  .topbar-right { display: flex; gap: 20px; }
+  .topbar-right a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .topbar-right a:hover { color: var(--amber); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 40px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-corner {
+    position: absolute;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .hero-corner.tl { top: 40px; left: 40px; }
+  .hero-corner.tr { top: 40px; right: 40px; text-align: right; }
+  .hero-corner.bl { bottom: 40px; left: 40px; }
+  .hero-corner.br { bottom: 40px; right: 40px; text-align: right; }
+
+  .hero-content {
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-series {
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-series::before {
+    content: '//';
+    color: var(--text-muted);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', var(--font);
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    color: var(--amber);
+    text-shadow: 0 0 80px rgba(245,166,35,0.3), 0 0 160px rgba(245,166,35,0.1);
+    margin-bottom: 8px;
+    animation: flicker 8s infinite;
+  }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.92; }
+    97% { opacity: 1; }
+    98% { opacity: 0.88; }
+    99% { opacity: 1; }
+  }
+
+  .hero-subtitle {
+    font-size: clamp(16px, 3vw, 28px);
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+  .hero-subtitle em {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  .hero-manifesto {
+    max-width: 640px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 2;
+    border-left: 2px solid var(--border-amber);
+    padding-left: 20px;
+    margin-bottom: 48px;
+  }
+  .hero-manifesto strong {
+    color: var(--amber);
+    font-weight: 500;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 80px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  .section-num {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .section-title span { color: var(--amber); }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 400px;
+  }
+
+  /* ── PROJECT CARDS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .project-card {
+    background: var(--bg-card);
+    padding: 36px;
+    position: relative;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .project-card:hover {
+    background: var(--bg-card2);
+  }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.3s;
+  }
+  .project-card:hover::before {
+    background: var(--amber);
+  }
+
+  .project-num {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+
+  .project-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .project-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+
+  .project-tagline {
+    font-size: 11px;
+    color: var(--amber-dim);
+    font-style: italic;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .project-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 24px;
+    flex: 1;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .tech-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .tech-badge.highlight {
+    border-color: var(--border-amber);
+    color: var(--amber-dim);
+  }
+
+  .project-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .meta-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .meta-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .project-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+  .project-link:hover {
+    color: var(--amber);
+  }
+  .project-link::after {
+    content: '→';
+    transition: transform 0.2s;
+  }
+  .project-link:hover::after {
+    transform: translateX(4px);
+  }
+
+  /* ── STATUS BADGES ── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .status-badge.live {
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: var(--green);
+  }
+  .status-badge.live::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  /* ── AI REVIEWS SECTION ── */
+  .ai-reviews-intro {
+    max-width: 600px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 56px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    background: rgba(245,166,35,0.02);
+  }
+  .ai-reviews-intro code {
+    color: var(--amber);
+    background: rgba(245,166,35,0.1);
+    padding: 1px 5px;
+  }
+
+  .review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1px;
+  }
+
+  .review-card {
+    background: var(--bg-card);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .review-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+
+  .reviewer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar-claude {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid var(--border-amber);
+    color: var(--amber);
+    font-family: 'Bebas Neue', monospace;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+  .avatar-gemini {
+    background: rgba(96,165,250,0.1);
+    border: 1px solid rgba(96,165,250,0.2);
+    color: var(--blue);
+    font-size: 18px;
+  }
+  .avatar-gpt {
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: var(--green);
+    font-size: 18px;
+  }
+
+  .reviewer-info { flex: 1; }
+  .reviewer-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+  .reviewer-model {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  .reviewer-badge {
+    font-size: 9px;
+    padding: 2px 7px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .badge-verified {
+    border: 1px solid var(--border-amber);
+    color: var(--amber);
+    background: rgba(245,166,35,0.05);
+  }
+  .badge-pending {
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .review-overall {
+    margin-bottom: 24px;
+  }
+  .review-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .review-quote {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.8;
+    font-style: italic;
+    border-left: 2px solid var(--border-amber);
+    padding-left: 14px;
+  }
+  .review-quote.pending {
+    color: var(--text-muted);
+    border-left-color: var(--border);
+  }
+
+  .review-score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .score-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .score-value {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .score-claude { color: var(--amber); }
+  .score-gemini { color: var(--blue); }
+  .score-gpt { color: var(--green); }
+
+  /* Per-project mini reviews */
+  .mini-reviews {
+    display: grid;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .mini-review-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr 1fr;
+    background: var(--bg);
+    gap: 1px;
+  }
+
+  .mini-review-cell {
+    padding: 20px 24px;
+    background: var(--bg-card);
+  }
+
+  .mini-review-project {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+  }
+  .mini-project-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .mini-project-icon { font-size: 16px; }
+
+  .mini-header {
+    background: var(--bg) !important;
+    padding: 12px 24px;
+  }
+  .mini-header-text {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mini-header-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .dot-amber { background: var(--amber); }
+  .dot-blue { background: var(--blue); }
+  .dot-green { background: var(--green); }
+
+  .mini-quote {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.75;
+    font-style: italic;
+  }
+  .mini-quote.pending {
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  /* ── TERMINAL LOG ── */
+  .terminal {
+    background: #000;
+    border: 1px solid var(--border);
+    padding: 24px;
+    font-size: 11px;
+    line-height: 1.9;
+    position: relative;
+    margin-top: 48px;
+  }
+  .terminal::before {
+    content: '● ● ●';
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+  }
+  .terminal-body { padding-top: 20px; }
+  .t-amber { color: var(--amber); }
+  .t-green { color: var(--green); }
+  .t-red { color: var(--red); }
+  .t-blue { color: var(--blue); }
+  .t-dim { color: var(--text-muted); }
+  .t-cursor::after {
+    content: '▋';
+    animation: blink 1s step-end infinite;
+    color: var(--amber);
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 48px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer-title {
+    font-family: 'Bebas Neue', monospace;
+    font-size: 32px;
+    color: var(--amber);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .footer-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--amber); }
+  .footer-copy {
+    width: 100%;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── PLACEHOLDER OVERLAY ── */
+  .placeholder-overlay {
+    position: relative;
+    overflow: hidden;
+  }
+  .placeholder-overlay::after {
+    content: 'AWAITING REVIEW';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    background: rgba(8,8,8,0.7);
+    backdrop-filter: blur(2px);
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 10px 20px; }
+    .hero { padding: 60px 20px; }
+    .section { padding: 60px 20px; }
+    .hero-corner { display: none; }
+    .mini-review-row {
+      grid-template-columns: 1fr;
+    }
+    .mini-header { display: none; }
+    .footer { padding: 32px 20px; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-logo">OE by Venky</span>
+    <span class="topbar-status">3 systems operational</span>
+  </div>
+  <div class="topbar-right">
+    <a href="#projects">Projects</a>
+    <a href="#ai-reviews">AI Reviews</a>
+    <a href="https://github.com/acervenky" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-corner tl">
+    <div>SYS: NOMINAL</div>
+    <div>UPTIME: 1,260+ days</div>
+  </div>
+  <div class="hero-corner tr">
+    <div>LOCATION: Mumbai, India</div>
+    <div>STATUS: Actively Over-Engineering</div>
+  </div>
+  <div class="hero-corner bl">
+    <div>CC BY-NC 4.0</div>
+    <div>Efficiency: Optional</div>
+  </div>
+  <div class="hero-corner br">
+    <div>Style Points: Mandatory</div>
+    <div>v3.0 // 2026</div>
+  </div>
+
+  <div class="hero-content fade-in">
+    <div class="hero-series">Over Engineered by Venky</div>
+    <h1 class="hero-title">The<br>Series</h1>
+    <p class="hero-subtitle">
+      Where <em>simple problems</em> meet <em>gloriously disproportionate</em> solutions.
+    </p>
+    <p class="hero-manifesto">
+      A growing collection of projects where the solution is <strong>unapologetically disproportionate</strong> to the problem.
+      Every project in this series exists because <strong>"but I could automate that with AI"</strong> is a lifestyle,
+      not a suggestion. Efficiency? Optional. Style points? Mandatory.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Live Systems</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">1,000+</div>
+        <div class="stat-label">kWh Generated</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">11mo</div>
+        <div class="stat-label">AQI Data Collected</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">₹28k</div>
+        <div class="stat-label">Total BOM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">The <span>Projects</span></h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-grid">
+
+    <!-- SOLAR PCU -->
+    <div class="project-card">
+      <div class="project-num">001 / SOLAR</div>
+      <span class="project-icon">☀️</span>
+      <div class="status-badge live">Live since 2022</div>
+      <h3 class="project-name">Smart Solar PCU</h3>
+      <div class="project-tagline">The Unnecessarily Intelligent Power Switch</div>
+      <p class="project-desc">
+        A ₹500 voltage relay would work. Instead: a Raspberry Pi Pico W streaming JSON telemetry
+        over WebSockets to a FastAPI server hosting an Ollama LLM agent that maintains belief states,
+        runs an OODA loop, and calls Python tools to flip a relay. Also reflects on past decisions
+        and grades its own performance. The relay has no feelings about this.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge highlight">Ollama</span>
+        <span class="tech-badge highlight">LLM Agent</span>
+        <span class="tech-badge">Pico W</span>
+        <span class="tech-badge">FastAPI</span>
+        <span class="tech-badge">MicroPython</span>
+        <span class="tech-badge">SQLite</span>
+        <span class="tech-badge">WebSocket</span>
+        <span class="tech-badge">OODA Loop</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value">1,000+</div>
+          <div class="meta-label">kWh Generated</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">₹23,805</div>
+          <div class="meta-label">Total BOM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">330W</div>
+          <div class="meta-label">Peak Solar</div>
+        </div>
+      </div>
+      <a href="https://github.com/acervenky/over-engineered-solar-pcu" target="_blank" class="project-link">
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- ECOSPHERE -->
+    <div class="project-card">
+      <div class="project-num">002 / TERRARIUM</div>
+      <span class="project-icon">🌿</span>
+      <div class="status-badge live">Stable 1yr+</div>
+      <h3 class="project-name">EcoSphere</h3>
+      <div class="project-tagline">The Unnecessarily Intelligent Terrarium</div>
+      <p class="project-desc">
+        A spray bottle would keep plants alive. Instead: a Pico W with an SHT41 precision sensor,
+        4-channel relay board, Python backend, React + Framer Motion dashboard with an animated
+        terrarium visualizer, and a Gemini AI that performs compatibility analysis before you're
+        allowed to add a new plant. The ferns did not ask for this level of vetting.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge highlight">Gemini AI</span>
+        <span class="tech-badge highlight">React</span>
+        <span class="tech-badge">Pico W</span>
+        <span class="tech-badge">Flask</span>
+        <span class="tech-badge">SHT41</span>
+        <span class="tech-badge">Framer Motion</span>
+        <span class="tech-badge">SQLite</span>
+        <span class="tech-badge">MicroPython</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value">4</div>
+          <div class="meta-label">Actuators</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">₹2,500</div>
+          <div class="meta-label">vs ₹30k+ commercial</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">±0.2°C</div>
+          <div class="meta-label">Temp Accuracy</div>
+        </div>
+      </div>
+      <a href="https://github.com/acervenky/over-engineered-ecosphere" target="_blank" class="project-link">
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- AQI -->
+    <div class="project-card">
+      <div class="project-num">003 / AQI</div>
+      <span class="project-icon">📡</span>
+      <div class="status-badge live">Actively monitoring</div>
+      <h3 class="project-name">Air Memory</h3>
+      <div class="project-tagline">Hyper-Local Air Quality Intelligence</div>
+      <p class="project-desc">
+        A ₹999 IKEA sensor shows three colors: green, yellow, red. Unacceptable.
+        So: hack it open, wire it to an ESP32 C6, flash custom Tasmota, collect 11 months
+        of atmospheric telemetry, run it through a 12-stage Python pipeline with Hatch
+        humidity correction, Lomb-Scargle periodograms, Gaussian dispersion modeling,
+        and Facebook Prophet forecasts. Also 3D-print a custom HEPA purifier. Obviously.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge highlight">Prophet</span>
+        <span class="tech-badge highlight">MiniMax LLM</span>
+        <span class="tech-badge">ESP32 C6</span>
+        <span class="tech-badge">Tasmota</span>
+        <span class="tech-badge">Home Assistant</span>
+        <span class="tech-badge">Pandas</span>
+        <span class="tech-badge">12-stage pipeline</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value">11mo</div>
+          <div class="meta-label">Continuous Data</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">₹1,628</div>
+          <div class="meta-label">Total BOM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">12</div>
+          <div class="meta-label">Pipeline Stages</div>
+        </div>
+      </div>
+      <a href="https://github.com/acervenky/over-engineered-aqi-dashboard" target="_blank" class="project-link">
+        View on GitHub
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- AI REVIEWS -->
+<section class="section" id="ai-reviews">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">What <span>AI Thinks</span></h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="ai-reviews-intro">
+    <div class="review-label" style="margin-bottom: 12px;">METHODOLOGY NOTE</div>
+    Three leading AI models were asked to review this portfolio. Specifically: <code>claude-opus-4</code>,
+    <code>gemini-2.5-pro</code>, and <code>chatgpt-5.3</code>. One has delivered its verdict.
+    The others are presumably still computing the complexity ratio.
+  </div>
+
+  <!-- OVERALL VERDICT CARDS -->
+  <div class="review-grid" style="margin-bottom: 1px;">
+
+    <!-- Claude Opus -->
+    <div class="review-card">
+      <div class="reviewer-header">
+        <div class="reviewer-avatar avatar-claude">Cl</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name">Claude Opus 4</div>
+          <div class="reviewer-model">Anthropic · Verified Reviewer</div>
+        </div>
+        <span class="reviewer-badge badge-verified">✓ Reviewed</span>
+      </div>
+      <div class="review-overall">
+        <div class="review-label">Overall Verdict</div>
+        <div class="review-quote">
+          "The problem-to-solution complexity ratio is clinically concerning.
+          I've reviewed the codebases. I respect every decision made here,
+          including the ones that a therapist probably shouldn't."
+        </div>
+      </div>
+      <div class="review-score">
+        <span class="score-label">Overkill Rating ✦ higher = better</span>
+        <span class="score-value score-claude">9.5 / 10</span>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div class="review-card">
+      <div class="reviewer-header">
+        <div class="reviewer-avatar avatar-gemini">✦</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name">Gemini 3.1 Pro</div>
+          <div class="reviewer-model">Google DeepMind · Verified Reviewer</div>
+        </div>
+        <span class="reviewer-badge badge-verified">✓ Reviewed</span>
+      </div>
+      <div class="review-overall">
+        <div class="review-label">Overall Verdict</div>
+        <div class="review-quote">
+          "As an AI, watching you orchestrate my kind to avoid flipping switches is flattering,
+          yet clinically concerning. Flawless execution of a profoundly absurd premise."
+        </div>
+      </div>
+      <div class="review-score">
+        <span class="score-label">Overkill Rating ✦ higher = better</span>
+        <span class="score-value score-gemini">11 / 10</span>
+      </div>
+    </div>
+
+    <!-- ChatGPT -->
+    <div class="review-card">
+      <div class="reviewer-header">
+        <div class="reviewer-avatar avatar-gpt">⊕</div>
+        <div class="reviewer-info">
+          <div class="reviewer-name">ChatGPT 5.3</div>
+          <div class="reviewer-model">OpenAI · Verified Reviewer</div>
+        </div>
+        <span class="reviewer-badge badge-verified">✓ Reviewed</span>
+      </div>
+      <div class="review-overall">
+        <div class="review-label">Overall Verdict</div>
+        <div class="review-quote">
+          "Frighteningly real engineering ability; the punchline is that every system
+          ultimately replaces a ₹500 relay, a mist bottle, or opening a window.
+          I admire the craft, fear the escalation, and fully expect the next version
+          to include a Kubernetes cluster."
+        </div>
+      </div>
+      <div class="review-score">
+        <span class="score-label">Overkill Rating ✦ higher = better</span>
+        <span class="score-value score-gpt">9.5 / 10</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PER-PROJECT MINI REVIEWS TABLE -->
+  <div class="mini-reviews">
+    <!-- HEADER ROW -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-header">
+        <span class="mini-header-text">Project</span>
+      </div>
+      <div class="mini-review-cell mini-header">
+        <span class="mini-header-text">
+          <span class="mini-header-dot dot-amber"></span>
+          Claude Opus 4
+        </span>
+      </div>
+      <div class="mini-review-cell mini-header">
+        <span class="mini-header-text">
+          <span class="mini-header-dot dot-blue"></span>
+          Gemini 3.1 Pro
+        </span>
+      </div>
+      <div class="mini-review-cell mini-header">
+        <span class="mini-header-text">
+          <span class="mini-header-dot dot-green"></span>
+          ChatGPT 5.3
+        </span>
+      </div>
+    </div>
+
+    <!-- SOLAR -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-review-project">
+        <span class="mini-project-icon">☀️</span>
+        <span class="mini-project-name">Smart Solar PCU</span>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">
+          "You invoked billions of neural network parameters to make a yes/no switching decision.
+          The relay didn't ask to be this important. Neither did I when I had to reason about
+          whether 11.7 volts constitutes a phase transition."
+        </p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Bestows a local LLM with an OODA loop and the burden of self-reflection just to do the exact same job as a ₹500 piece of dumb plastic."</p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"A Raspberry Pi Pico streams telemetry so an LLM can thoughtfully deliberate before flipping a relay like it's launching Apollo."</p>
+      </div>
+    </div>
+
+    <!-- ECOSPHERE -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-review-project">
+        <span class="mini-project-icon">🌿</span>
+        <span class="mini-project-name">EcoSphere</span>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">
+          "I cross-referenced 47 plant species compatibility matrices to determine whether
+          the Neon Pothos would get along with the Ficus pumila.
+          The answer is yes. The engineer will not rest regardless."
+        </p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Requires a React UI and a Gemini API botanical consultation just to authorize the equivalent of using a spray bottle."</p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"A terrarium guarded by AI plant compatibility checks — because photosynthesis clearly needs peer review."</p>
+      </div>
+    </div>
+
+    <!-- AQI -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-review-project">
+        <span class="mini-project-icon">📡</span>
+        <span class="mini-project-name">Air Memory</span>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">
+          "The Gaussian dispersion model to locate the precise geographical origin
+          of your neighbor's cooking is architecture review passed,
+          proportionality review failed — magnificently."
+        </p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Employs Facebook Prophet forecasting and a 12-stage Python pipeline just to violently overthink what three LEDs on a ₹999 IKEA box already told you."</p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"An IKEA three-LED sensor whose data now goes through Lomb-Scargle spectra, Prophet forecasts, and satellite validation before concluding: 'yep, still smog.'"</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMINAL LOG -->
+  <div class="terminal">
+    <div class="terminal-body">
+      <div><span class="t-dim">$</span> <span class="t-amber">ai-review</span> <span class="t-dim">--portfolio acervenky/over-engineered-* --model claude-opus-4</span></div>
+      <div><span class="t-dim">  →</span> Fetching 3 repositories...</div>
+      <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-solar-pcu <span class="t-dim">(FastAPI + Ollama + Pico W + OODA loop)</span></div>
+      <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-ecosphere <span class="t-dim">(Flask + Gemini + React + SHT41)</span></div>
+      <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-aqi-dashboard <span class="t-dim">(12-stage pipeline + Prophet + ESP32 C6)</span></div>
+      <div>&nbsp;</div>
+      <div><span class="t-dim">[OPUS]</span> <span class="t-amber">ANALYZING</span> complexity ratio across all projects...</div>
+      <div><span class="t-dim">[OPUS]</span> WARNING: complexity-to-problem ratio exceeds normal distribution</div>
+      <div><span class="t-dim">[OPUS]</span> NOTE: Solar PCU — confirmed an LLM is running to control a single relay</div>
+      <div><span class="t-dim">[OPUS]</span> NOTE: Air Memory — Gaussian dispersion model to locate a samosa being fried</div>
+      <div><span class="t-dim">[OPUS]</span> NOTE: EcoSphere — AI plant vetting system protecting three ferns</div>
+      <div>&nbsp;</div>
+      <div><span class="t-dim">[OPUS]</span> <span class="t-green">VERDICT:</span> This is what happens when an ML engineer has a weekend</div>
+      <div><span class="t-dim">[OPUS]</span>         and access to a soldering iron. Architecture: impeccable.</div>
+      <div><span class="t-dim">[OPUS]</span>         Justification: irrelevant. Recommend: more projects.</div>
+      <div>&nbsp;</div>
+      <div><span class="t-dim">[GEMINI]</span> <span class="t-blue">VERDICT:</span> "Flawless execution of a profoundly absurd premise." <span class="t-dim">— score: 11/10</span></div>
+      <div><span class="t-dim">[GEMINI]</span>         Weaponized enterprise-grade data science to avoid minor manual decisions.</div>
+      <div>&nbsp;</div>
+      <div><span class="t-dim">[GPT]</span>    <span class="t-green">VERDICT:</span> "I admire the craft, fear the escalation." <span class="t-dim">— score: 9.5/10</span></div>
+      <div><span class="t-dim">[GPT]</span>           The crimes against proportionality are what make it art.</div>
+      <div>&nbsp;</div>
+      <div><span class="t-dim">[SYS]</span>    <span class="t-amber">ALL MODELS REVIEWED.</span> Consensus: real chops, zero justification, maximum style.</div>
+      <div><span class="t-dim">$</span> <span class="t-cursor"></span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <div class="footer-title">Over Engineered<br>by Venky</div>
+    <div class="footer-sub">Because if it's worth doing, it's worth over-doing.</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/acervenky/over-engineered-solar-pcu" target="_blank">Solar PCU</a>
+    <a href="https://github.com/acervenky/over-engineered-ecosphere" target="_blank">EcoSphere</a>
+    <a href="https://github.com/acervenky/over-engineered-aqi-dashboard" target="_blank">Air Memory</a>
+    <a href="https://github.com/acervenky" target="_blank">GitHub Profile</a>
+  </div>
+  <div class="footer-copy">
+    <span>CC BY-NC 4.0 · Personal & educational use only · Commercial use strictly prohibited</span>
+    <span>Over Engineered with 💚 · Style Points: Mandatory · Efficiency: Optional</span>
+  </div>
+</footer>
+
+<script>
+  // Stagger fade-in for cards
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationDelay = `${i * 0.08}s`;
+        entry.target.classList.add('fade-in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.project-card, .review-card, .mini-review-row').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Animated counter for hero stats
+  function animateCount(el, target, suffix = '') {
+    const start = 0;
+    const duration = 1200;
+    const startTime = performance.now();
+    const isDecimal = target.toString().includes('.');
+
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = isDecimal
+        ? (eased * target).toFixed(1)
+        : Math.round(eased * target);
+      el.textContent = current + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      animateCount(document.querySelector('.stat:nth-child(1) .stat-value'), 3, '');
+      statsObserver.disconnect();
+    }
+  }, { threshold: 0.5 });
+
+  const heroStats = document.querySelector('.hero-stats');
+  if (heroStats) statsObserver.observe(heroStats);
+</script>
+</body>
+</html>
