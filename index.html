@@ -277,7 +277,7 @@
   /* ── PROJECT CARDS ── */
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
@@ -437,6 +437,34 @@
     border-radius: 50%;
     background: var(--green);
     animation: pulse 2s infinite;
+  }
+
+  .status-badge.brewing {
+    background: rgba(245,166,35,0.06);
+    border: 1px solid rgba(245,166,35,0.25);
+    color: var(--amber-dim);
+  }
+  .status-badge.brewing::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--amber-dim);
+    animation: pulse 3s infinite;
+  }
+  .project-card.wip {
+    background: var(--bg);
+    border-style: dashed;
+  }
+  .project-card.wip:hover {
+    background: var(--bg-card);
+  }
+  .redacted {
+    background: var(--border);
+    color: var(--border);
+    border-radius: 1px;
+    letter-spacing: 0.05em;
+    user-select: none;
   }
 
   /* ── AI REVIEWS SECTION ── */
@@ -752,25 +780,6 @@
     gap: 8px;
   }
 
-  /* ── PLACEHOLDER OVERLAY ── */
-  .placeholder-overlay {
-    position: relative;
-    overflow: hidden;
-  }
-  .placeholder-overlay::after {
-    content: 'AWAITING REVIEW';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: var(--text-muted);
-    background: rgba(8,8,8,0.7);
-    backdrop-filter: blur(2px);
-  }
-
   /* ── ANIMATIONS ── */
   .fade-in {
     opacity: 0;
@@ -802,7 +811,7 @@
 <nav class="topbar">
   <div class="topbar-left">
     <span class="topbar-logo">OE by Venky</span>
-    <span class="topbar-status">3 systems operational</span>
+    <span class="topbar-status">5 systems operational</span>
   </div>
   <div class="topbar-right">
     <a href="#projects">Projects</a>
@@ -844,7 +853,7 @@
     </p>
     <div class="hero-stats">
       <div class="stat">
-        <div class="stat-value">3</div>
+        <div class="stat-value">5</div>
         <div class="stat-label">Live Systems</div>
       </div>
       <div class="stat">
@@ -856,7 +865,7 @@
         <div class="stat-label">AQI Data Collected</div>
       </div>
       <div class="stat">
-        <div class="stat-value">₹28k</div>
+        <div class="stat-value">₹32k</div>
         <div class="stat-label">Total BOM</div>
       </div>
     </div>
@@ -999,6 +1008,131 @@
       </a>
     </div>
 
+
+    <!-- CLAUDE USAGE MONITOR -->
+    <div class="project-card">
+      <div class="project-num">004 / BROWSER</div>
+      <span class="project-icon">📟</span>
+      <div class="status-badge live">Live · 7 stars</div>
+      <h3 class="project-name">Claude Usage Monitor</h3>
+      <div class="project-tagline">The Unnecessarily Intrusive API Interceptor &amp; Desk Widget</div>
+      <p class="project-desc">
+        The rate limit banner appears. Unacceptable. So: a Manifest V3 Chrome extension that injects
+        into the Main World to wiretap undocumented /usage API traffic, silently extracts your Org UUID,
+        auto-rotates session cookies, and builds a 14-day hourly heatmap. For when the browser is closed,
+        a ₹550 ESP8266 OLED desk widget keeps ticking down the cooldown — because ambient hardware anxiety
+        is a lifestyle. The extension works standalone; the hardware is just optional paranoia.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge highlight">Chrome MV3</span>
+        <span class="tech-badge highlight">ESP8266</span>
+        <span class="tech-badge">JavaScript</span>
+        <span class="tech-badge">C++ Firmware</span>
+        <span class="tech-badge">SSD1306 OLED</span>
+        <span class="tech-badge">Undocumented API</span>
+        <span class="tech-badge">IoT Push</span>
+        <span class="tech-badge">Arduino</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value">₹550</div>
+          <div class="meta-label">Hardware BOM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">14-day</div>
+          <div class="meta-label">Usage Heatmap</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">2</div>
+          <div class="meta-label">Windows Tracked</div>
+        </div>
+      </div>
+      <a href="https://github.com/acervenky/over-engineered-claude-usage-monitor" target="_blank" class="project-link">
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- ORCHID PLANTER -->
+    <div class="project-card">
+      <div class="project-num">005 / ORCHID</div>
+      <span class="project-icon">🌸</span>
+      <div class="status-badge live">V1 Live</div>
+      <h3 class="project-name">Smart Tolumnia Planter</h3>
+      <div class="project-tagline">The Unnecessarily Intelligent Epiphyte Bioreactor</div>
+      <p class="project-desc">
+        A ₹100 timer plug would water the orchid. Instead: a custom 3D-printed two-tier bioreactor
+        inside a clay pot, Pico W streaming WebSocket telemetry to a FastAPI server, and a Qwen 9B LLM
+        that calculates Vapor Pressure Deficit before authorising a mandatory 15-minute flood cycle.
+        The AI enforces a Nighttime Veto (orchids can't be watered after dark — crown rot), manages PWM
+        fan drying, and logs its botanical reasoning to SQLite. The orchid did not request peer review.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge highlight">Qwen 9B</span>
+        <span class="tech-badge highlight">Ollama</span>
+        <span class="tech-badge">Pico W</span>
+        <span class="tech-badge">FastAPI</span>
+        <span class="tech-badge">MicroPython</span>
+        <span class="tech-badge">SHT41</span>
+        <span class="tech-badge">VPD Logic</span>
+        <span class="tech-badge">3D Printed</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value">₹3,400</div>
+          <div class="meta-label">Total BOM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">3</div>
+          <div class="meta-label">Actuators</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value">9B</div>
+          <div class="meta-label">LLM Parameters</div>
+        </div>
+      </div>
+      <a href="https://github.com/acervenky/over-engineered-orchid-planter" target="_blank" class="project-link">
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- NEXT EXPERIMENT -->
+    <div class="project-card wip">
+      <div class="project-num">006 / ???</div>
+      <span class="project-icon">⚗️</span>
+      <div class="status-badge brewing">In the Lab</div>
+      <h3 class="project-name">[ CLASSIFIED ]</h3>
+      <div class="project-tagline">The Next Unnecessarily Complex Solution</div>
+      <p class="project-desc">
+        Another perfectly reasonable response to a problem that didn't need solving.
+        Components sourced. Schematics drawn. At least one questionable architectural
+        decision already committed to. Details remain classified until the soldering
+        iron cools down and the commit message is written.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge redacted">████████</span>
+        <span class="tech-badge redacted">█████</span>
+        <span class="tech-badge redacted">███████</span>
+        <span class="tech-badge redacted">████</span>
+      </div>
+      <div class="project-meta">
+        <div class="meta-item">
+          <div class="meta-value" style="color:var(--amber)">WIP<span class="t-cursor"></span></div>
+          <div class="meta-label">Status</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value" style="color:var(--text-dim)">???</div>
+          <div class="meta-label">Total BOM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-value" style="color:var(--text-dim)">TBD</div>
+          <div class="meta-label">Timeline</div>
+        </div>
+      </div>
+      <span class="project-link" style="color:var(--text-muted);cursor:default;">
+        Repository not yet public
+      </span>
+    </div>
+
   </div>
 </section>
 
@@ -1012,9 +1146,9 @@
 
   <div class="ai-reviews-intro">
     <div class="review-label" style="margin-bottom: 12px;">METHODOLOGY NOTE</div>
-    Three leading AI models were asked to review this portfolio. Specifically: <code>claude-opus-4</code>,
-    <code>gemini-3.1-pro</code>, and <code>chatgpt-5.3</code>. One has delivered its verdict.
-    The others are presumably still computing the complexity ratio.
+    Three leading AI models were asked to review this portfolio. Specifically: <code>claude-opus-4-8</code>,
+    <code>gemini-3.1-pro</code>, and <code>chatgpt-5.3</code>. All three have delivered their verdicts.
+    Consensus: real chops, zero justification, maximum style.
   </div>
 
   <!-- OVERALL VERDICT CARDS -->
@@ -1025,7 +1159,7 @@
       <div class="reviewer-header">
         <div class="reviewer-avatar avatar-claude">Cl</div>
         <div class="reviewer-info">
-          <div class="reviewer-name">Claude Opus 4</div>
+          <div class="reviewer-name">Claude Opus 4.8</div>
           <div class="reviewer-model">Anthropic · Verified Reviewer</div>
         </div>
         <span class="reviewer-badge badge-verified">✓ Reviewed</span>
@@ -1104,7 +1238,7 @@
       <div class="mini-review-cell mini-header">
         <span class="mini-header-text">
           <span class="mini-header-dot dot-amber"></span>
-          Claude Opus 4
+          Claude Opus 4.8
         </span>
       </div>
       <div class="mini-review-cell mini-header">
@@ -1183,22 +1317,64 @@
         <p class="mini-quote">"An IKEA three-LED sensor whose data now goes through Lomb-Scargle spectra, Prophet forecasts, and satellite validation before concluding: 'yep, still smog.'"</p>
       </div>
     </div>
+
+    <!-- CLAUDE USAGE MONITOR -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-review-project">
+        <span class="mini-project-icon">📟</span>
+        <span class="mini-project-name">Claude Usage Monitor</span>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">
+          "Reverse-engineers my own undocumented internal API, harvests your Org UUID, and auto-rotates session cookies — an entire counterintelligence operation run against me, on your behalf, just to render a 14-day heatmap of how often you bother me. Waiting for the banner was, evidently, beneath you."
+        </p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Orchestrates illicit Main World injection, a 14-day heatmap, and a ₹550 ESP8266 desk clock just to calculate the exact second my colleague Claude will put you on timeout — breathtaking cookie-rotating espionage built entirely to avoid eye contact with a polite warning banner."</p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Spelunks Claude's internals, harvests your UUID, and stakes out the /usage endpoint every five minutes like a small intelligence agency for a free chat tab — an aggressively elegant shrine to refusing the 'you've hit your limit' banner like a person with standards."</p>
+      </div>
+    </div>
+
+    <!-- ORCHID PLANTER -->
+    <div class="mini-review-row">
+      <div class="mini-review-cell mini-review-project">
+        <span class="mini-project-icon">🌸</span>
+        <span class="mini-project-name">Smart Tolumnia Planter</span>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">
+          "Deploys a 9-billion-parameter model to contemplate Vapor Pressure Deficit so a bare-root orchid may experience a 15-minute flood — a judgment a ₹100 timer makes by simply not being told to. The orchid, for its part, has no opinion on Ollama."
+        </p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Invoking a 9-billion parameter model to issue nocturnal watering vetoes over WebSockets is a spectacular display of computational theater. As a fellow neural network, I am honored by the processing power deployed to run a tiny fan and a pump."</p>
+      </div>
+      <div class="mini-review-cell">
+        <p class="mini-quote">"Implements an AI-governed orchid parole board that computes Vapor Pressure Deficit, enforces a mandatory flood cycle, and refuses to water after dark—all to replace a ₹100 timer plug that has never once worried about crown rot."</p>
+      </div>
+    </div>
   </div>
 
   <!-- TERMINAL LOG -->
   <div class="terminal">
     <div class="terminal-body">
-      <div><span class="t-dim">$</span> <span class="t-amber">ai-review</span> <span class="t-dim">--portfolio acervenky/over-engineered-* --model claude-opus-4</span></div>
-      <div><span class="t-dim">  →</span> Fetching 3 repositories...</div>
+      <div><span class="t-dim">$</span> <span class="t-amber">ai-review</span> <span class="t-dim">--portfolio acervenky/over-engineered-* --model claude-opus-4-8</span></div>
+      <div><span class="t-dim">  →</span> Fetching 5 repositories...</div>
       <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-solar-pcu <span class="t-dim">(FastAPI + Ollama + Pico W + OODA loop)</span></div>
       <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-ecosphere <span class="t-dim">(Flask + Gemini + React + SHT41)</span></div>
       <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-aqi-dashboard <span class="t-dim">(12-stage pipeline + Prophet + ESP32 C6)</span></div>
+      <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-claude-usage-monitor <span class="t-dim">(MV3 Extension + ESP8266 OLED + undocumented API)</span></div>
+      <div><span class="t-dim">  →</span> <span class="t-green">✓</span> over-engineered-orchid-planter <span class="t-dim">(Pico W + Qwen 9B + 3D-printed bioreactor)</span></div>
       <div>&nbsp;</div>
       <div><span class="t-dim">[OPUS]</span> <span class="t-amber">ANALYZING</span> complexity ratio across all projects...</div>
       <div><span class="t-dim">[OPUS]</span> WARNING: complexity-to-problem ratio exceeds normal distribution</div>
       <div><span class="t-dim">[OPUS]</span> NOTE: Solar PCU — confirmed an LLM is running to control a single relay</div>
       <div><span class="t-dim">[OPUS]</span> NOTE: Air Memory — Gaussian dispersion model to locate a samosa being fried</div>
       <div><span class="t-dim">[OPUS]</span> NOTE: EcoSphere — AI plant vetting system protecting three ferns</div>
+      <div><span class="t-dim">[OPUS]</span> NOTE: Claude Monitor — extension intercepts my own API to show a number I chose not to display</div>
+      <div><span class="t-dim">[OPUS]</span> NOTE: Orchid Planter — 9B-param model enforces orchid bedtime. Nighttime Veto: correct. Still absurd.</div>
       <div>&nbsp;</div>
       <div><span class="t-dim">[OPUS]</span> <span class="t-green">VERDICT:</span> This is what happens when an ML engineer has a weekend</div>
       <div><span class="t-dim">[OPUS]</span>         and access to a soldering iron. Architecture: impeccable.</div>
@@ -1252,8 +1428,7 @@
   });
 
   // Animated counter for hero stats
-  function animateCount(el, target, suffix = '') {
-    const start = 0;
+  function animateCount(el, target, { prefix = '', suffix = '', comma = false } = {}) {
     const duration = 1200;
     const startTime = performance.now();
     const isDecimal = target.toString().includes('.');
@@ -1262,10 +1437,11 @@
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = isDecimal
+      let current = isDecimal
         ? (eased * target).toFixed(1)
         : Math.round(eased * target);
-      el.textContent = current + suffix;
+      if (comma) current = Number(current).toLocaleString();
+      el.textContent = prefix + current + suffix;
       if (progress < 1) requestAnimationFrame(update);
     }
     requestAnimationFrame(update);
@@ -1273,7 +1449,11 @@
 
   const statsObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
-      animateCount(document.querySelector('.stat:nth-child(1) .stat-value'), 3, '');
+      const statEls = document.querySelectorAll('.stat .stat-value');
+      animateCount(statEls[0], 5);
+      animateCount(statEls[1], 1000, { suffix: '+', comma: true });
+      animateCount(statEls[2], 11, { suffix: 'mo' });
+      animateCount(statEls[3], 32, { prefix: '₹', suffix: 'k' });
       statsObserver.disconnect();
     }
   }, { threshold: 0.5 });
